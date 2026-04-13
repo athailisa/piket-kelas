@@ -3,11 +3,9 @@
 <head>
   <title>Admin Page</title>
 
-  <!-- WAJIB RESPONSIVE -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <script src="https://unpkg.com/feather-icons"></script>
@@ -16,70 +14,39 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13"></script>
 
   <style>
-    body {
-      background: #fdf8f5;
-      font-family: 'Poppins', sans-serif;
-      padding: 10px;
-    }
-
-    h2 {
-      font-weight: 600;
-      color: #5c3d2e;
-    }
-
-    .card {
-      border-radius: 20px;
-      border: none;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    }
-
+    body { 
+      background:#fdf8f5;
+      font-family:Poppins;
+      padding:10px;
+         }
+    .card { 
+      border-radius:20px;
+       border:none;
+        box-shadow:0 10px 25px rgba(0,0,0,0.05);
+       }
     img {
-      width: 100%;
-      max-width: 250px;
-      height: auto;
-      object-fit: cover;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    img:hover {
-      transform: scale(1.02);
-    }
-
-    .header-admin {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .form-control, .form-select {
-      border-radius: 10px;
-      padding: 10px;
-    }
-
-    button {
-      border-radius: 10px !important;
-    }
-
-    @media (max-width: 600px) {
-      h2 {
-        font-size: 20px;
+       width:100%;
+        max-width:250px;
+         border-radius:10px; 
+         cursor:pointer; 
+        }
+    .header {
+       display:flex; 
+       justify-content:space-between; 
+       flex-wrap:wrap;
+        gap:10px; 
       }
 
-      .card {
-        padding: 15px !important;
-      }
+    .btn-icon {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:14px;
+    }
 
-      img {
-        max-width: 100%;
-      }
-
-      .btn {
-        font-size: 14px;
-      }
+    button svg {
+      width:16px;
+      height:16px;
     }
   </style>
 </head>
@@ -88,53 +55,43 @@
 
 <div class="container mt-4">
 
-  <!-- HEADER -->
-  <div class="header-admin mb-3">
-    <h2>Admin Page</h2>
-    <button onclick="logout()" class="btn btn-danger">Logout</button>
+  <div class="header mb-3">
+    <h2 class="fw-bold">Admin Page</h2>
+    <button onclick="logout()" class="btn btn-danger btn-icon">
+      <i data-feather="log-out"></i> Logout
+    </button>
   </div>
 
   <!-- FORM -->
   <div class="card p-4 mb-4">
-    <input type="text" id="nama" class="form-control mb-2" placeholder="Nama siswa">
-    <input type="text" id="tanggal" class="form-control mb-2" placeholder="Masukan tanggal">
+    <input id="nama" class="form-control mb-2" placeholder="Nama siswa">
+    <input id="tanggal" class="form-control mb-2" placeholder="Tanggal">
 
     <select id="status" class="form-select mb-2">
-      <option value="Bersih">Bersih</option>
-      <option value="Kotor">Kotor</option>
+      <option>Bersih</option>
+      <option>Kotor</option>
     </select>
 
-    <input type="text" id="catatan" class="form-control mb-2" placeholder="Catatan">
-    <input type="file" id="foto" class="form-control mb-3" accept="image/*">
+    <input id="catatan" class="form-control mb-2" placeholder="Catatan">
+    <input id="foto" type="file" class="form-control mb-3">
 
-    <button onclick="tambahData()" class="btn btn-success w-100">
-      <i data-feather="plus-circle"></i> Tambah
-    </button>
+    <button onclick="tambahData()" class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2">
+  <i data-feather="plus-circle"></i>
+  <span>Tambah Data</span>
+   </button>
   </div>
 
-  <!-- PROGRESS -->
-  <div class="card p-3 mb-4">
-    <div class="d-flex justify-content-between">
-      <p class="mb-1">Progress Kebersihan</p>
-      <p class="mb-1" id="persenText">0%</p>
-    </div>
-    <div class="progress">
-      <div id="progressBar" class="progress-bar bg-primary"></div>
-    </div>
-  </div>
-
-  <h5>Total Data: <span id="total">0</span></h5>
+  <h5>Total: <span id="total">0</span></h5>
 
   <div id="list"></div>
-
 </div>
 
-<!-- MODAL ZOOM -->
-<div class="modal fade" id="zoomModal" tabindex="-1">
+<!-- MODAL -->
+<div class="modal fade" id="zoomModal">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content bg-dark">
       <div class="modal-body text-center p-0">
-        <img id="zoomImg" style="width:100%; max-height:90vh; object-fit:contain;">
+        <img id="zoomImg" style="width:100%; max-height:90vh;">
       </div>
     </div>
   </div>
@@ -145,25 +102,15 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(
   "https://lfruadqggiugakpfhwph.supabase.co",
-   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmcnVhZHFnZ2l1Z2FrcGZod3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDQ2MzQsImV4cCI6MjA5MTQ4MDYzNH0.K6ewi__8XseiRbF98Vhs_jp-DscaSO43BQUblfRZVao"
-
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmcnVhZHFnZ2l1Z2FrcGZod3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDQ2MzQsImV4cCI6MjA5MTQ4MDYzNH0.K6ewi__8XseiRbF98Vhs_jp-DscaSO43BQUblfRZVao"
 );
 
 // LOGIN CHECK
 setTimeout(async () => {
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    alert("Belum login ❌");
-    window.location.href = "index.html";
-    return;
-  }
-
-  if (user.email.trim().toLowerCase() !== "admin@gmail.com") {
-    alert("Akses ditolak ❌");
-    window.location.href = "user.html";
-    return;
-  }
+  if (!user) return window.location.replace("./index.html");
+  if (user.email !== "admin@gmail.com") return window.location.replace("./user.html");
 
   tampil();
 }, 500);
@@ -177,46 +124,33 @@ async function tampil() {
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  let bersih = 0;
-
-  data.forEach((item) => {
-    if (item.status === "Bersih") bersih++;
-
+  data.forEach(item => {
     list.innerHTML += `
       <div class="card p-3 mb-2">
         <b>${item.nama}</b><br>
+        <small>${item.status}</small><br>
 
-        ${item.foto ? `<img src="${item.foto}" class="mt-2" onclick="zoomFoto('${item.foto}')">` : ""}
+        ${item.foto ? `<img src="${item.foto}" onclick="zoomFoto('${item.foto}')">` : ""}
 
-        <div class="mt-3">
-          <button onclick="editData('${item.id}','${item.nama}')"
-            class="btn btn-sm btn-success">
-            <i data-feather="edit-2"></i> Edit
+        <div class="mt-2 d-flex gap-2">
+
+          <button class="btn btn-sm btn-success btn-icon"
+            onclick="editData('${item.id}')">
+            <i data-feather="edit"></i> Edit
           </button>
 
-          <button onclick="hapusData('${item.id}')"
-            class="btn btn-sm btn-danger">
+          <button class="btn btn-sm btn-danger btn-icon"
+            onclick="hapus('${item.id}')">
             <i data-feather="trash-2"></i> Hapus
           </button>
+
         </div>
       </div>
     `;
   });
 
-  const persen = data.length ? (bersih / data.length) * 100 : 0;
-
-  document.getElementById("progressBar").style.width = persen + "%";
-  document.getElementById("persenText").innerText = Math.round(persen) + "%";
-
   feather.replace();
 }
-
-// ZOOM FOTO
-window.zoomFoto = (src) => {
-  document.getElementById("zoomImg").src = src;
-  const modal = new bootstrap.Modal(document.getElementById('zoomModal'));
-  modal.show();
-};
 
 // TAMBAH / EDIT
 window.tambahData = async () => {
@@ -226,65 +160,77 @@ window.tambahData = async () => {
   const catatan = document.getElementById("catatan").value;
   const file = document.getElementById("foto").files[0];
 
-  if (!nama) return alert("Isi nama dulu!");
-  if (!tanggal) return alert("Tanggal wajib diisi!");
+  if (!nama || !tanggal) return alert("Isi lengkap!");
 
   const parts = tanggal.split("/");
   const iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
 
-  let url = "";
+  let url = null;
 
   if (file) {
     const fileName = Date.now() + "_" + file.name;
 
-    await supabase.storage.from("foto").upload(fileName, file);
+    const { error } = await supabase.storage.from("foto").upload(fileName, file);
 
-    const { data } = supabase.storage.from("foto").getPublicUrl(fileName);
-
-    url = data.publicUrl;
+    if (!error) {
+      const { data } = supabase.storage.from("foto").getPublicUrl(fileName);
+      url = data.publicUrl;
+    }
   }
+
+  const payload = { nama, tanggal: iso, status, catatan };
+  if (url) payload.foto = url;
 
   if (window.editId) {
-    await supabase.from("piket")
-      .update({ nama, tanggal: iso, status, catatan, foto: url })
-      .eq("id", window.editId);
-
+    await supabase.from("piket").update(payload).eq("id", window.editId);
     window.editId = null;
   } else {
-    await supabase.from("piket")
-      .insert([{ nama, tanggal: iso, status, catatan, foto: url }]);
+    await supabase.from("piket").insert([payload]);
   }
 
-  document.getElementById("nama").value = "";
-  document.getElementById("tanggal").value = "";
-  document.getElementById("catatan").value = "";
-  document.getElementById("foto").value = "";
-
+  resetForm();
   tampil();
 };
 
 // EDIT
-window.editData = (id, nama) => {
-  document.getElementById("nama").value = nama;
+window.editData = async (id) => {
+  const { data } = await supabase.from("piket").select("*").eq("id", id).single();
+
+  document.getElementById("nama").value = data.nama;
+  document.getElementById("tanggal").value = data.tanggal;
+  document.getElementById("status").value = data.status;
+  document.getElementById("catatan").value = data.catatan;
+
   window.editId = id;
 };
 
 // HAPUS
-window.hapusData = async (id) => {
+window.hapus = async (id) => {
   await supabase.from("piket").delete().eq("id", id);
   tampil();
+};
+
+// RESET
+function resetForm() {
+  document.getElementById("nama").value = "";
+  document.getElementById("tanggal").value = "";
+  document.getElementById("catatan").value = "";
+  document.getElementById("foto").value = "";
+}
+
+// ZOOM
+window.zoomFoto = (src) => {
+  document.getElementById("zoomImg").src = src;
+  new bootstrap.Modal(document.getElementById("zoomModal")).show();
 };
 
 // LOGOUT
 window.logout = async () => {
   await supabase.auth.signOut();
-  window.location.href = "index.html";
+  window.location.replace("./index.html");
 };
 
-// DATE PICKER
-flatpickr("#tanggal", {
-  dateFormat: "d/m/Y"
-});
+flatpickr("#tanggal", { dateFormat: "d/m/Y" });
 
 feather.replace();
 </script>
