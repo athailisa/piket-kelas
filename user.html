@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- 🔥 WAJIB RESPONSIVE -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>User Page</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -41,7 +40,6 @@
       color: #2e7d32;
       padding: 5px 10px;
       border-radius: 10px;
-      display: inline-block;
     }
 
     .kotor {
@@ -49,7 +47,6 @@
       color: #c62828;
       padding: 5px 10px;
       border-radius: 10px;
-      display: inline-block;
     }
 
     img {
@@ -71,7 +68,6 @@
       border-radius: 10px;
     }
 
-    /* 🔥 HEADER RESPONSIVE */
     .header-user {
       display: flex;
       justify-content: space-between;
@@ -80,24 +76,8 @@
       gap: 10px;
     }
 
-    /* 🔥 MOBILE */
-    @media (max-width: 600px) {
-      h2 {
-        font-size: 20px;
-      }
+    .modal-img { max-width: 100%; }
 
-      .card {
-        padding: 15px !important;
-      }
-
-      .btn {
-        font-size: 14px;
-      }
-
-      img {
-        max-width: 100%;
-      }
-    }
   </style>
 </head>
 
@@ -105,13 +85,14 @@
 
 <div class="container mt-3">
 
-  <!-- HEADER -->
   <div class="header-user mb-3">
     <h2>User Page</h2>
-    <button onclick="logout()" class="btn btn-danger">Logout</button>
+
+    <button onclick="showLogoutModal()" class="btn btn-danger d-flex align-items-center gap-2">
+      <i data-feather="log-out"></i> Logout
+    </button>
   </div>
 
-  <!-- FORM -->
   <div class="card p-4 mb-4">
     <input type="text" id="nama" class="form-control mb-2" placeholder="Nama siswa">
     <input type="text" id="tanggal" class="form-control mb-2" placeholder="Pilih tanggal">
@@ -129,7 +110,6 @@
     </button>
   </div>
 
-  <!-- PROGRESS -->
   <div class="card p-3 mb-4">
     <div class="d-flex justify-content-between">
       <p class="mb-1">Progress Kebersihan</p>
@@ -146,12 +126,31 @@
 
 </div>
 
-<!-- MODAL ZOOM -->
 <div class="modal fade" id="zoomModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content bg-dark">
-      <div class="modal-body text-center p-0">
-        <img id="zoomImg" style="width:100%; max-height:90vh; object-fit:contain;">
+      <div class="modal-body text-center p-2">
+        <img id="zoomImg" style="max-width:100%; max-height:80vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content py-4 px-3 text-center">
+      <h5 class="mb-4">
+        <i data-feather="alert-triangle"></i> Yakin mau logout?
+      </h5>
+
+      <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-success" data-bs-dismiss="modal">
+          Tidak
+        </button>
+
+        <button class="btn btn-danger" onclick="confirmLogout()">
+          Ya, Logout
+        </button>
       </div>
     </div>
   </div>
@@ -162,11 +161,9 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(
   "https://lfruadqggiugakpfhwph.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmcnVhZHFnZ2l1Z2FrcGZod3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDQ2MzQsImV4cCI6MjA5MTQ4MDYzNH0.K6ewi__8XseiRbF98Vhs_jp-DscaSO43BQUblfRZVao"
-
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmcnVhZHFnZ2l1Z2FrcGZod3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDQ2MzQsImV4cCI6MjA5MTQ4MDYzNH0.K6ewi__8XseiRbF98Vhs_jp-DscaSO43BQUblfRZVao"
 );
 
-// LOGIN CHECK
 const { data: { user } } = await supabase.auth.getUser();
 
 if (!user) {
@@ -174,7 +171,6 @@ if (!user) {
   window.location.href = "index.html";
 }
 
-// FORMAT TANGGAL
 function formatTanggal(tgl) {
   return new Date(tgl).toLocaleDateString("id-ID", {
     weekday: "long",
@@ -184,7 +180,6 @@ function formatTanggal(tgl) {
   });
 }
 
-// TAMPIL DATA
 async function tampil() {
   const { data } = await supabase.from("piket").select("*");
 
@@ -201,19 +196,18 @@ async function tampil() {
 
     list.innerHTML += `
       <div class="card p-3 mb-3">
-
         <h5>${item.nama}</h5>
 
-        <span class="${item.status === "Bersih" ? "bersih" : "kotor"}">
+      <span class="${item.status==='Bersih'?'bersih':'kotor'}">
+          <i data-feather="${item.status==='Bersih'?'check':'x'}"></i>
           ${item.status}
         </span>
 
         <p class="mt-2"><small>${formatTanggal(item.tanggal)}</small></p>
 
-        <p>${item.catatan || "-"}</p>
+        <p class="mt-2">${item.catatan || "-"}</p>
 
-        ${item.foto ? `<img src="${item.foto}" onclick="zoomFoto('${item.foto}')">` : ""}
-
+        ${item.foto ? `<img src="${item.foto}" class="mt-2" onclick="zoomFoto('${item.foto}')">` : ""}
       </div>
     `;
   });
@@ -226,7 +220,6 @@ async function tampil() {
   feather.replace();
 }
 
-// TAMBAH DATA
 window.tambahData = async () => {
   const nama = document.getElementById("nama").value;
   const tanggal = document.getElementById("tanggal").value;
@@ -267,20 +260,21 @@ window.tambahData = async () => {
   tampil();
 };
 
-// LOGOUT
-window.logout = async () => {
+window.showLogoutModal = () => {
+  new bootstrap.Modal(document.getElementById("logoutModal")).show();
+};
+
+window.confirmLogout = async () => {
   await supabase.auth.signOut();
   window.location.href = "index.html";
 };
 
-// ZOOM FOTO
 window.zoomFoto = (src) => {
   document.getElementById("zoomImg").src = src;
   const modal = new bootstrap.Modal(document.getElementById('zoomModal'));
   modal.show();
 };
 
-// DATE PICKER
 flatpickr("#tanggal", {
   dateFormat: "d/m/Y",
   locale: flatpickr.l10ns.id
@@ -290,7 +284,7 @@ tampil();
 feather.replace();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
 </body>
 </html>

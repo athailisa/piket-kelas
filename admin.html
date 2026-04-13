@@ -5,8 +5,9 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <script src="https://unpkg.com/feather-icons"></script>
 
@@ -18,24 +19,46 @@
       background:#fdf8f5;
       font-family:Poppins;
       padding:10px;
-         }
+    }
     .card { 
       border-radius:20px;
-       border:none;
-        box-shadow:0 10px 25px rgba(0,0,0,0.05);
-       }
-    img {
-       width:100%;
-        max-width:250px;
-         border-radius:10px; 
-         cursor:pointer; 
-        }
+      border:none;
+      box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    }
+
+        .bersih {
+      background: #e6f4ea;
+      color: #2e7d32;
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+    .kotor {
+      background: #fdecea;
+      color: #c62828;
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+   img {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    img:hover {
+      transform: scale(1.02);
+    }
     .header {
-       display:flex; 
-       justify-content:space-between; 
-       flex-wrap:wrap;
-        gap:10px; 
-      }
+      display:flex; 
+      justify-content:space-between; 
+      flex-wrap:wrap;
+      gap:10px; 
+    }
 
     .btn-icon {
       display:flex;
@@ -48,6 +71,7 @@
       width:16px;
       height:16px;
     }
+    .modal-img { max-width: 100%; }
   </style>
 </head>
 
@@ -57,7 +81,8 @@
 
   <div class="header mb-3">
     <h2 class="fw-bold">Admin Page</h2>
-    <button onclick="logout()" class="btn btn-danger btn-icon">
+    <!-- 🔥 DIUBAH DI SINI (PAKAI MODAL) -->
+    <button onclick="showLogoutModal()" class="btn btn-danger btn-icon">
       <i data-feather="log-out"></i> Logout
     </button>
   </div>
@@ -76,9 +101,20 @@
     <input id="foto" type="file" class="form-control mb-3">
 
     <button onclick="tambahData()" class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2">
-  <i data-feather="plus-circle"></i>
-  <span>Tambah Data</span>
-   </button>
+      <i data-feather="plus-circle"></i>
+      <span>Tambah Data</span>
+    </button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="card p-3 mb-4">
+    <div class="d-flex justify-content-between">
+      <p class="mb-1">Progress Kebersihan</p>
+      <p class="mb-1" id="persenText">0%</p>
+    </div>
+    <div class="progress">
+      <div id="progressBar" class="progress-bar bg-primary"></div>
+    </div>
   </div>
 
   <h5>Total: <span id="total">0</span></h5>
@@ -86,12 +122,33 @@
   <div id="list"></div>
 </div>
 
-<!-- MODAL -->
-<div class="modal fade" id="zoomModal">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
+<!-- MODAL FOTO -->
+<div class="modal fade" id="zoomModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content bg-dark">
-      <div class="modal-body text-center p-0">
-        <img id="zoomImg" style="width:100%; max-height:90vh;">
+      <div class="modal-body text-center p-2">
+        <img id="zoomImg" style="max-width:100%; max-height:80vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔥 MODAL LOGOUT (DITAMBAHKAN) -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content py-4 px-3 text-center">
+      <h5 class="mb-4">
+        <i data-feather="alert-triangle"></i> Yakin mau logout?
+      </h5>
+
+      <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-success" data-bs-dismiss="modal">
+          Tidak
+        </button>
+
+        <button class="btn btn-danger" onclick="confirmLogout()">
+          Ya, Logout
+        </button>
       </div>
     </div>
   </div>
@@ -124,13 +181,22 @@ async function tampil() {
   const list = document.getElementById("list");
   list.innerHTML = "";
 
+  let bersih = 0;
+
   data.forEach(item => {
+
+    if (item.status === "Bersih") bersih++;
+
     list.innerHTML += `
       <div class="card p-3 mb-2">
         <b>${item.nama}</b><br>
-        <small>${item.status}</small><br>
+        
+      <span class="${item.status==='Bersih'?'bersih':'kotor'}">
+          <i data-feather="${item.status==='Bersih'?'check':'x'}"></i>
+          ${item.status}
+        </span>
 
-        ${item.foto ? `<img src="${item.foto}" onclick="zoomFoto('${item.foto}')">` : ""}
+         ${item.foto ? `<img src="${item.foto}" class="mt-2" onclick="zoomFoto('${item.foto}')">` : ""}
 
         <div class="mt-2 d-flex gap-2">
 
@@ -148,6 +214,12 @@ async function tampil() {
       </div>
     `;
   });
+
+  let total = data.length;
+  let persen = total ? (bersih / total) * 100 : 0;
+
+  document.getElementById("progressBar").style.width = persen + "%";
+  document.getElementById("persenText").innerText = Math.round(persen) + "%";
 
   feather.replace();
 }
@@ -221,21 +293,38 @@ function resetForm() {
 // ZOOM
 window.zoomFoto = (src) => {
   document.getElementById("zoomImg").src = src;
-  new bootstrap.Modal(document.getElementById("zoomModal")).show();
+  const modal = new bootstrap.Modal(document.getElementById('zoomModal'));
+  modal.show();
 };
 
-// LOGOUT
-window.logout = async () => {
+// 🔥 MODAL LOGOUT FUNCTION
+window.showLogoutModal = () => {
+  new bootstrap.Modal(document.getElementById('logoutModal')).show();
+};
+
+window.confirmLogout = async () => {
   await supabase.auth.signOut();
   window.location.replace("./index.html");
 };
 
 flatpickr("#tanggal", { dateFormat: "d/m/Y" });
 
+// REALTIME
+supabase
+  .channel('piket-channel')
+  .on('postgres_changes', {
+    event: '*',
+    schema: 'public',
+    table: 'piket'
+  }, () => {
+    tampil();
+  })
+  .subscribe();
+
 feather.replace();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
 </body>
 </html>
