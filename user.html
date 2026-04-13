@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Page</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/id.js"></script>
+
+
+  
+  <style>
+    body {
+      background: #fdf8f5;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h2 {
+      font-weight: 600;
+      color: #5c3d2e;
+    }
+
+    .card {
+      border-radius: 20px;
+      border: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .bersih {
+      background: #e6f4ea;
+      color: #2e7d32;
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+    .kotor {
+      background: #fdecea;
+      color: #c62828;
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+    img {
+      width: 250px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    img:hover {
+      transform: scale(1.02);
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between mb-3">
+    <h2>User Page </h2>
+    <button onclick="logout()" class="btn btn-danger">Logout</button>
+  </div>
+
+  <!-- FORM -->
+  <div class="card p-4 mb-4">
+    <input type="text" id="nama" class="form-control mb-2" placeholder="Nama siswa">
+    <input type="text" id="tanggal" class="form-control mb-2" placeholder="Pilih tanggal">
+
+    <select id="status" class="form-select mb-2">
+      <option value="Bersih">Bersih</option>
+      <option value="Kotor">Kotor</option>
+    </select>
+
+    <input type="text" id="catatan" class="form-control mb-2" placeholder="Catatan">
+    <input type="file" id="foto" class="form-control mb-3" accept="image/*">
+
+    <button onclick="tambahData()" class="btn btn-success w-100">
+      <i data-feather="plus-circle"></i> Tambah
+    </button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="card p-3 mb-4">
+    <div class="d-flex justify-content-between">
+      <p class="mb-1">Progress Kebersihan</p>
+      <p class="mb-1" id="persenText">0%</p>
+    </div>
+    <div class="progress">
+      <div id="progressBar" class="progress-bar bg-primary"></div>
+    </div>
+  </div>
+
+  <h5>Total Data: <span id="total">0</span></h5>
+
+  <div id="list"></div>
+
+</div>
+
+<!-- MODAL ZOOM -->
+<div class="modal fade" id="zoomModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-dark">
+      <div class="modal-body text-center p-0">
+        <img id="zoomImg" style="width:100%; height:auto; max-height:90vh; object-fit:contain;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://lfruadqggiugakpfhwph.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmcnVhZHFnZ2l1Z2FrcGZod3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDQ2MzQsImV4cCI6MjA5MTQ4MDYzNH0.K6ewi__8XseiRbF98Vhs_jp-DscaSO43BQUblfRZVao"
+);
+
+// LOGIN CHECK
+const { data: { user } } = await supabase.auth.getUser();
+
+if (!user) {
+  alert("Harus login dulu!");
+  window.location.href = "login.html";
+}
+
+// FORMAT TANGGAL
+function formatTanggal(tgl) {
+  return new Date(tgl).toLocaleDateString("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+}
+
+// TAMPIL DATA
+async function tampil() {
+  const { data } = await supabase.from("piket").select("*");
+
+  document.getElementById("total").innerText = data.length;
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  let bersih = 0;
+
+  data.forEach(item => {
+
+    if (item.status === "Bersih") bersih++;
+
+    list.innerHTML += `
+      <div class="card p-3 mb-3">
+
+        <h5>${item.nama}</h5>
+
+        <span class="${item.status === "Bersih" ? "bersih" : "kotor"}">
+          ${item.status}
+        </span>
+
+        <p class="mt-2"><small>${formatTanggal(item.tanggal)}</small></p>
+
+        <p>${item.catatan || "-"}</p>
+
+        ${item.foto ? `<img src="${item.foto}" class="mt-2" onclick="zoomFoto('${item.foto}')">` : ""}
+
+      </div>
+    `;
+  });
+
+  let persen = data.length ? (bersih / data.length) * 100 : 0;
+
+  document.getElementById("progressBar").style.width = persen + "%";
+  document.getElementById("persenText").innerText = Math.round(persen) + "%";
+
+  feather.replace();
+}
+
+// TAMBAH DATA
+window.tambahData = async () => {
+  const nama = document.getElementById("nama").value;
+  const tanggal = document.getElementById("tanggal").value;
+  const status = document.getElementById("status").value;
+  const catatan = document.getElementById("catatan").value;
+  const file = document.getElementById("foto").files[0];
+
+  if (!nama || !tanggal) return alert("Isi nama & tanggal!");
+
+  const parts = tanggal.split("/");
+  const iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+  let url = "";
+
+  if (file) {
+    const fileName = Date.now() + "_" + file.name;
+
+    await supabase.storage.from("foto").upload(fileName, file);
+
+    const { data } = supabase.storage.from("foto").getPublicUrl(fileName);
+
+    url = data.publicUrl;
+  }
+
+  await supabase.from("piket").insert([{
+    nama,
+    tanggal: iso,
+    status,
+    catatan,
+    foto: url
+  }]);
+
+  document.getElementById("nama").value = "";
+  document.getElementById("tanggal").value = "";
+  document.getElementById("catatan").value = "";
+  document.getElementById("foto").value = "";
+
+  tampil();
+};
+
+// LOGOUT
+window.logout = async () => {
+  await supabase.auth.signOut();
+  window.location.href = "login.html";
+};
+
+// ZOOM FOTO (SEPERTI ADMIN)
+window.zoomFoto = (src) => {
+  document.getElementById("zoomImg").src = src;
+  const modal = new bootstrap.Modal(document.getElementById('zoomModal'));
+  modal.show();
+};
+
+// DATE PICKER
+flatpickr("#tanggal", {
+  dateFormat: "d/m/Y",
+  locale: flatpickr.l10ns.id
+});
+
+tampil();
+feather.replace();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+</body>
+</html>
