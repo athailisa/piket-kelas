@@ -3,7 +3,10 @@
 <head>
   <title>Admin Page</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <!-- WAJIB RESPONSIVE -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -13,43 +16,85 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13"></script>
 
   <style>
-      body {
-        background: #fdf8f5;
-        font-family: 'Poppins', sans-serif;
+    body {
+      background: #fdf8f5;
+      font-family: 'Poppins', sans-serif;
+      padding: 10px;
+    }
+
+    h2 {
+      font-weight: 600;
+      color: #5c3d2e;
+    }
+
+    .card {
+      border-radius: 20px;
+      border: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    img {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    img:hover {
+      transform: scale(1.02);
+    }
+
+    .header-admin {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .form-control, .form-select {
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    button {
+      border-radius: 10px !important;
+    }
+
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 20px;
       }
-      h2 { 
-        font-weight: 600; 
-        color: #5c3d2e; 
-      }
+
       .card {
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        padding: 15px !important;
       }
+
       img {
-        width: 250px;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.2s;
+        max-width: 100%;
       }
-      img:hover {
-        transform: scale(1.02);
+
+      .btn {
+        font-size: 14px;
+      }
     }
   </style>
-
 </head>
 
 <body>
 
 <div class="container mt-4">
 
-  <div class="d-flex justify-content-between mb-3">
-    <h2>Admin Page </h2>
+  <!-- HEADER -->
+  <div class="header-admin mb-3">
+    <h2>Admin Page</h2>
     <button onclick="logout()" class="btn btn-danger">Logout</button>
   </div>
 
+  <!-- FORM -->
   <div class="card p-4 mb-4">
     <input type="text" id="nama" class="form-control mb-2" placeholder="Nama siswa">
     <input type="text" id="tanggal" class="form-control mb-2" placeholder="Masukan tanggal">
@@ -67,6 +112,7 @@
     </button>
   </div>
 
+  <!-- PROGRESS -->
   <div class="card p-3 mb-4">
     <div class="d-flex justify-content-between">
       <p class="mb-1">Progress Kebersihan</p>
@@ -83,12 +129,12 @@
 
 </div>
 
-<!-- ✅ MODAL ZOOM BESAR (SEPERTI ADMIN) -->
+<!-- MODAL ZOOM -->
 <div class="modal fade" id="zoomModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content bg-dark">
       <div class="modal-body text-center p-0">
-        <img id="zoomImg" style="width:100%; height:auto; max-height:90vh; object-fit:contain;">
+        <img id="zoomImg" style="width:100%; max-height:90vh; object-fit:contain;">
       </div>
     </div>
   </div>
@@ -99,7 +145,8 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabase = createClient(
   "https://lfruadqggiugakpfhwph.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmcnVhZHFnZ2l1Z2FrcGZod3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDQ2MzQsImV4cCI6MjA5MTQ4MDYzNH0.K6ewi__8XseiRbF98Vhs_jp-DscaSO43BQUblfRZVao"
+   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmcnVhZHFnZ2l1Z2FrcGZod3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MDQ2MzQsImV4cCI6MjA5MTQ4MDYzNH0.K6ewi__8XseiRbF98Vhs_jp-DscaSO43BQUblfRZVao"
+
 );
 
 // LOGIN CHECK
@@ -108,7 +155,7 @@ setTimeout(async () => {
 
   if (!user) {
     alert("Belum login ❌");
-    window.location.href = "login.html";
+    window.location.href = "index.html";
     return;
   }
 
@@ -137,10 +184,9 @@ async function tampil() {
 
     list.innerHTML += `
       <div class="card p-3 mb-2">
-
         <b>${item.nama}</b><br>
 
-       ${item.foto ? `<img src="${item.foto}" class="mt-2" onclick="zoomFoto('${item.foto}')">` : ""}
+        ${item.foto ? `<img src="${item.foto}" class="mt-2" onclick="zoomFoto('${item.foto}')">` : ""}
 
         <div class="mt-3">
           <button onclick="editData('${item.id}','${item.nama}')"
@@ -153,7 +199,6 @@ async function tampil() {
             <i data-feather="trash-2"></i> Hapus
           </button>
         </div>
-
       </div>
     `;
   });
@@ -166,14 +211,14 @@ async function tampil() {
   feather.replace();
 }
 
-// ZOOM FOTO (FIX CENTER STYLE USER)
+// ZOOM FOTO
 window.zoomFoto = (src) => {
   document.getElementById("zoomImg").src = src;
   const modal = new bootstrap.Modal(document.getElementById('zoomModal'));
   modal.show();
 };
 
-// TAMBAH + EDIT
+// TAMBAH / EDIT
 window.tambahData = async () => {
   const nama = document.getElementById("nama").value;
   const tanggal = document.getElementById("tanggal").value;
@@ -200,15 +245,13 @@ window.tambahData = async () => {
   }
 
   if (window.editId) {
-    await supabase
-      .from("piket")
+    await supabase.from("piket")
       .update({ nama, tanggal: iso, status, catatan, foto: url })
       .eq("id", window.editId);
 
     window.editId = null;
   } else {
-    await supabase
-      .from("piket")
+    await supabase.from("piket")
       .insert([{ nama, tanggal: iso, status, catatan, foto: url }]);
   }
 
@@ -235,14 +278,7 @@ window.hapusData = async (id) => {
 // LOGOUT
 window.logout = async () => {
   await supabase.auth.signOut();
-  window.location.href = "login.html";
-};
-
-// ZOOM FOTO (SEPERTI ADMIN)
-window.zoomFoto = (src) => {
-  document.getElementById("zoomImg").src = src;
-  const modal = new bootstrap.Modal(document.getElementById('zoomModal'));
-  modal.show();
+  window.location.href = "index.html";
 };
 
 // DATE PICKER
@@ -253,7 +289,7 @@ flatpickr("#tanggal", {
 feather.replace();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
