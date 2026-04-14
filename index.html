@@ -2,8 +2,6 @@
 <html>
 <head>
   <title>Login</title>
-
-  <!-- WAJIB responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -17,7 +15,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px; /* biar gak nempel di HP */
+      padding: 20px; 
       background: linear-gradient(135deg, #fdf8f5, #f1e3d3);
       font-family: 'Poppins', sans-serif;
     }
@@ -71,7 +69,6 @@
       }
     }
 
-    /* 🔥 RESPONSIVE TAMBAHAN */
     @media (max-width: 480px) {
       .card {
         padding: 20px;
@@ -93,7 +90,7 @@
 <body>
 
 <div class="card">
-  <h3 class="text-center mb-4">Login 🔐</h3>
+  <h3 class="text-center mb-4">Login </h3>
 
   <input id="email" class="form-control mb-3" placeholder="Email">
   <input id="password" type="password" class="form-control mb-3" placeholder="Password">
@@ -118,10 +115,9 @@ document.getElementById("registerBtn").onclick = async () => {
   const { error } = await supabase.auth.signUp({ email, password });
 
   if (error) return alert(error.message);
-  alert("Register berhasil 🔥");
+  alert("Register berhasil!");
 };
 
-// LOGIN
 document.getElementById("loginBtn").onclick = async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -131,7 +127,7 @@ document.getElementById("loginBtn").onclick = async () => {
     password
   });
 
-  if (error) return alert("Email / Password salah ❌");
+  if (error) return alert("Email / Password salah !");
 
   localStorage.setItem("login", data.user.email);
 
