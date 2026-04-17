@@ -13,6 +13,7 @@
       margin: 0;
       min-height: 100vh;
       display: flex;
+      flex-direction: column; /* tambahan biar atas + card bisa rapi */
       justify-content: center;
       align-items: center;
       padding: 20px; 
@@ -89,6 +90,13 @@
 
 <body>
 
+<!-- 🔥 DIUBAH: TIDAK MELENGKUNG + DIBESARKAN -->
+<div class="text-center mb-3">
+  <h2 style="font-weight:600; color:#5c3d2e; font-size:30px;">
+    Jadwal Piket
+  </h2>
+</div>
+ 
 <div class="card">
   <h3 class="text-center mb-4">Login </h3>
 
@@ -130,11 +138,8 @@ document.getElementById("loginBtn").onclick = async () => {
 
   localStorage.setItem("login", data.user.email);
 
-  if (data.user.email === "admin@gmail.com") {
-    window.location.href = "admin.html";
-  } else {
-    window.location.href = "user.html";
-  }
+ 
+    window.location.href = "jadwal.html";
 };
 </script>
 

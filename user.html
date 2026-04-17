@@ -158,6 +158,12 @@
 
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+const params = new URLSearchParams(window.location.search);
+const hariDipilih = params.get("hari");
+
+if (hariDipilih) {
+  document.getElementById("tanggal").value = hariDipilih;
+}
 
 const supabase = createClient(
   "https://lfruadqggiugakpfhwph.supabase.co",
